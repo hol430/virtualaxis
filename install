@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+#
+# Install all files required by the virtual joystick service.
+#
+
+set -euo pipefail
+
+# Copy files to destination paths.
+cp 99-virtual-joytsick.rules /usr/lib/udev/rules.d/
+cp virtualaxis.py /usr/local/bin/
+cp virtual-joystick.service /usr/lib/systemd/system/
+
+# Reload udev rules.
+udevadm control --reload-rules
+udevadm trigger
+
+# Reload systemd services.
+systemctl daemon-reload
+
+# Restart the systemd service?
+systemctl restart virtual-joystick
