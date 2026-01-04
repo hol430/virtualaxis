@@ -4,11 +4,13 @@ After=multi-user.target
 
 [Service]
 Type=simple
-ExecStartPre=/bin/systemctl stop virtual-joystick.service
-ExecStart=/usr/local/bin/virtualaxis.py
-Restart=on-failure
+ExecStart=/usr/bin/python3 -u /usr/local/bin/virtualjoystick.py
+Restart=always
 RestartSec=10s
 User=root
+StartLimitIntervalSec=0
+StandardOutput=journal
+StandardError=journal
 
 [Install]
 WantedBy=multi-user.target

@@ -6,8 +6,12 @@ from evdev import InputDevice, UInput, ecodes as e, AbsInfo
 # Replace this with the actual eventX of your pedals
 pedals_path = "/dev/input/by-id/usb-Thrustmaster_T-Rudder_00000000001A-event-if00"
 
+# Replace this with the actual eventX of your desired joystick
+joystick_path = "/dev/input/js1"
+
 # Open the input device
 pedals = InputDevice(pedals_path)
+joystick = InputDevice(joystick_path)
 
 # Set up the virtual joystick
 capabilities = {
@@ -21,8 +25,10 @@ capabilities = {
     e.EV_SYN: [],
 }
 
-virtual_joystick = UInput(events=capabilities, name="VirtualJoystick", bustype=e.BUS_USB)
-print(f"Virtual joystick created: {virtual_joystick.device}")
+virtual_pedals = UInput(events=capabilities, name="VirtualJoystick", bustype=e.BUS_USB)
+print(f"Virtual pedals created: {virtual_pedals.device}")
+
+
 
 # Normalize a value to -32768 to 32767 range
 def normalize(value, min_val, max_val, ymin = -32768, ymax = 32767):
@@ -42,17 +48,18 @@ try:
                 right_value = normalize(event.value, 0, 1023)
             elif event.code == e.ABS_Z: # rudders
                 rudder_value = normalize(event.value, 0, 1023, -512, 511)
-                virtual_joystick.write(e.EV_ABS, e.ABS_Y, rudder_value)
-                virtual_joystick.syn()
+                virtual_pedals.write(e.EV_ABS, e.ABS_Y, rudder_value)
+                virtual_pedals.syn()
                 continue
 
             # Combine the two axes (average them)
             combined_value = (left_value + right_value) // 2
 
             # Send the combined value to the virtual joystick
-            virtual_joystick.write(e.EV_ABS, e.ABS_X, combined_value)
-            virtual_joystick.syn()
+            virtual_pedals.write(e.EV_ABS, e.ABS_X, combined_value)
+            virtual_pedals.syn()
 
 except KeyboardInterrupt:
     print("Exiting...")
-    virtual_joystick.close()
+    virtual_pedals.close()
+

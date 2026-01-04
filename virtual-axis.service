@@ -1,0 +1,14 @@
+[Unit]
+Description=Virtual Axis
+After=multi-user.target
+
+[Service]
+Type=simple
+ExecStartPre=/bin/systemctl stop virtual-axis.service
+ExecStart=/usr/local/bin/virtualaxis.py
+Restart=on-failure
+RestartSec=10s
+User=root
+
+[Install]
+WantedBy=multi-user.target

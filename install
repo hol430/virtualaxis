@@ -7,7 +7,11 @@ set -euo pipefail
 
 # Copy files to destination paths.
 cp 99-virtual-joytsick.rules /usr/lib/udev/rules.d/
+
 cp virtualaxis.py /usr/local/bin/
+cp virtual-axis.service /usr/lib/systemd/system/
+
+cp virtualjoystick.py /usr/local/bin/
 cp virtual-joystick.service /usr/lib/systemd/system/
 
 # Reload udev rules.
@@ -17,5 +21,10 @@ udevadm trigger
 # Reload systemd services.
 systemctl daemon-reload
 
-# Restart the systemd service?
+# Enable the services to start at boot.
+systemctl enable virtual-axis
+systemctl enable virtual-joystick
+
+# Restart the services in case they're already running.
+systemctl restart virtual-axis
 systemctl restart virtual-joystick
